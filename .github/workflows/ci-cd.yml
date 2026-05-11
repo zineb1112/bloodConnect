@@ -5,36 +5,37 @@ on:
     branches: ["main"]
 
 jobs:
+
   build-test:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Récupérer code
+      # 1. Checkout code
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Installer Docker
+      # 2. Setup Docker
       - name: Set up Docker
         uses: docker/setup-buildx-action@v3
 
-      # 3. Build de tous les services
+      # 3. Build images
       - name: Build all services
         run: docker compose build
 
-      # 4. Lancer stack complète
+      # 4. Start stack
       - name: Start full stack
         run: docker compose up -d
 
-      # 5. Vérifier containers
+      # 5. Check containers
       - name: Check running containers
         run: docker ps
 
-      # 6. Logs (debug utile pour jury)
+      # 6. Logs for debugging
       - name: Show logs (hospital)
-        run: docker logs hospital_service
+        run: docker logs hospital_service || true
 
       - name: Show logs (donor)
-        run: docker logs donor_service
+        run: docker logs donor_service || true
 
 
   security-scan:
@@ -42,12 +43,60 @@ jobs:
     needs: build-test
 
     steps:
+
+      # Checkout code
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Install tools
       - name: Install Trivy
         run: |
           sudo apt-get update
           sudo apt-get install -y curl
-
           curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sudo sh -s -- -b /usr/local/bin
+
+      # ---------------------------
+      # 1. Container Image Scan
+      # ---------------------------
+      - name: Scan Docker images (Trivy)
+        run: |
+          trivy image --severity HIGH,CRITICAL --exit-code 1 hospital_service
+          trivy image --severity HIGH,CRITICAL --exit-code 1 donor_service
+
+      # ---------------------------
+      # 2. Code Security (SAST)
+      # ---------------------------
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: python
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+
+      # ---------------------------
+      # 3. Secrets Detection
+      # ---------------------------
+      - name: Scan secrets (Gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+
+      # ---------------------------
+      # 4. Python Dependencies Security
+      # ---------------------------
+      - name: Install safety
+        run: pip install safety
+
+      - name: Check Python dependencies
+        run: safety check
+
+      # ---------------------------
+      # 5. Dockerfile Security
+      # ---------------------------
+      - name: Dockerfile lint (Hadolint)
+        uses: hadolint/hadolint-action@v3.1.0
+
+      # ---------------------------
+      # 6. Validate Docker Compose
+      # ---------------------------
+      - name: Validate docker-compose
+        run: docker compose config
