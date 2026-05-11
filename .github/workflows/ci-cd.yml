@@ -19,11 +19,11 @@ jobs:
 
       # 3. Build de tous les services
       - name: Build all services
-        run: docker-compose build
+        run: docker compose build
 
       # 4. Lancer stack complète
       - name: Start full stack
-        run: docker-compose up -d
+        run: docker compose up -d
 
       # 5. Vérifier containers
       - name: Check running containers
