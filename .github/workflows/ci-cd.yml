@@ -4,7 +4,7 @@ on:
   push:
     branches: ["main"]
 
-# Permissions for CodeQL
+# Required permissions for CodeQL
 permissions:
   actions: read
   contents: read
@@ -33,7 +33,7 @@ jobs:
         run: |
           docker compose build
 
-          # Tag images for Trivy
+          # Tag images for Trivy scanning
           docker tag bloodconnect-hospital hospital_service:latest || true
           docker tag bloodconnect-donor donor_service:latest || true
           docker tag bloodconnect-ai ai_service:latest || true
@@ -46,7 +46,7 @@ jobs:
       - name: Check running containers
         run: docker ps
 
-      # Show logs for debugging
+      # Debug logs
       - name: Show logs (hospital)
         run: docker logs hospital_service || true
 
@@ -92,7 +92,7 @@ jobs:
         run: trivy image --severity HIGH,CRITICAL ai_service:latest || true
 
       # =====================================
-      # Static Application Security Testing
+      # Static Code Analysis (SAST)
       # =====================================
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
@@ -119,17 +119,17 @@ jobs:
         run: safety check || true
 
       # =====================================
-      # Dockerfile Linting
+      # Dockerfile Security Linting
       # =====================================
       - name: Lint hospital Dockerfile
         uses: hadolint/hadolint-action@v3.1.0
         with:
-          dockerfile: hospital/Dockerfile
+          dockerfile: hospital_backend/Dockerfile
 
       - name: Lint donor Dockerfile
         uses: hadolint/hadolint-action@v3.1.0
         with:
-          dockerfile: donor/Dockerfile
+          dockerfile: donor_backend/Dockerfile
 
       - name: Lint AI Dockerfile
         uses: hadolint/hadolint-action@v3.1.0
