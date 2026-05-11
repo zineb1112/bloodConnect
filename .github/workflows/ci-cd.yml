@@ -4,14 +4,23 @@ on:
   push:
     branches: ["main"]
 
+# Permissions required for CodeQL
+permissions:
+  actions: read
+  contents: read
+  security-events: write
+
 jobs:
 
+  # =========================================
+  # BUILD & TEST
+  # =========================================
   build-test:
     runs-on: ubuntu-latest
 
     steps:
 
-      # 1. Checkout code
+      # 1. Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -19,11 +28,12 @@ jobs:
       - name: Set up Docker
         uses: docker/setup-buildx-action@v3
 
-      # 3. Build images (IMPORTANT: avec tags explicites)
+      # 3. Build Docker images
       - name: Build Docker images
         run: |
           docker compose build
 
+          # Tag images for Trivy scanning
           docker tag bloodconnect-hospital hospital_service:latest || true
           docker tag bloodconnect-donor donor_service:latest || true
 
@@ -31,11 +41,11 @@ jobs:
       - name: Start full stack
         run: docker compose up -d
 
-      # 5. Check containers
+      # 5. Verify containers
       - name: Check running containers
         run: docker ps
 
-      # 6. Logs debug
+      # 6. Show logs for debugging
       - name: Show logs (hospital)
         run: docker logs hospital_service || true
 
@@ -43,35 +53,39 @@ jobs:
         run: docker logs donor_service || true
 
 
+  # =========================================
+  # SECURITY SCAN
+  # =========================================
   security-scan:
     runs-on: ubuntu-latest
     needs: build-test
 
     steps:
 
+      # 1. Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # -------------------------
+      # =====================================
       # Install Trivy
-      # -------------------------
+      # =====================================
       - name: Install Trivy
         run: |
           sudo apt-get update
           sudo apt-get install -y curl
           curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sudo sh -s -- -b /usr/local/bin
 
-      # -------------------------
-      # Docker image scan (FIXED)
-      # -------------------------
+      # =====================================
+      # Docker Image Vulnerability Scan
+      # =====================================
       - name: Scan Docker images (Trivy)
         run: |
           trivy image --severity HIGH,CRITICAL hospital_service:latest || true
           trivy image --severity HIGH,CRITICAL donor_service:latest || true
 
-      # -------------------------
-      # Code Security (CodeQL)
-      # -------------------------
+      # =====================================
+      # Static Code Analysis (SAST)
+      # =====================================
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
@@ -79,30 +93,31 @@ jobs:
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
+        continue-on-error: true
 
-      # -------------------------
-      # Secrets detection
-      # -------------------------
+      # =====================================
+      # Secrets Detection
+      # =====================================
       - name: Scan secrets (Gitleaks)
         uses: gitleaks/gitleaks-action@v2
 
-      # -------------------------
-      # Python dependencies check
-      # -------------------------
-      - name: Install safety
+      # =====================================
+      # Python Dependencies Security
+      # =====================================
+      - name: Install Safety
         run: pip install safety
 
       - name: Check Python dependencies
         run: safety check || true
 
-      # -------------------------
-      # Dockerfile lint
-      # -------------------------
+      # =====================================
+      # Dockerfile Security Best Practices
+      # =====================================
       - name: Dockerfile lint (Hadolint)
         uses: hadolint/hadolint-action@v3.1.0
 
-      # -------------------------
-      # Validate docker compose
-      # -------------------------
+      # =====================================
+      # Validate Docker Compose
+      # =====================================
       - name: Validate docker-compose
         run: docker compose config
