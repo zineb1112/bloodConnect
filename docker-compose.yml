@@ -1,0 +1,113 @@
+﻿version: "3.9"
+
+services:
+
+  hospital:
+    build:
+      context: ./hospital_backend
+      dockerfile: Dockerfile
+    container_name: hospital_service
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      ai:
+        condition: service_started
+    environment:
+      DB_HOST: db
+      DB_NAME: blood_db
+      DB_USER: blood_user
+      DB_PASSWORD: blood_pass
+      DONOR_SERVICE_BASE_URL: http://donor:8000
+      #H: for ai service
+      AI_SERVICE_HOST: ai
+      AI_SERVICE_PORT: 50051
+    volumes:
+      - ./hospital_backend:/app
+    command: >
+      sh -c "/usr/local/bin/wait-for-db.sh db python manage.py makemigrations &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+
+  donor:
+    build:
+      context: ./donor_backend
+      dockerfile: Dockerfile
+    container_name: donor_service
+    ports:
+      - "8001:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      ai:
+        condition: service_started
+    environment:
+      DB_HOST: db
+      DB_NAME: blood_db
+      DB_USER: blood_user
+      DB_PASSWORD: blood_pass
+      HOSPITAL_SERVICE_BASE_URL: http://hospital:8000
+      #H: for ai service
+      AI_SERVICE_HOST: ai
+      AI_SERVICE_PORT: 50051
+    command: >
+      sh -c "/usr/local/bin/wait-for-db.sh db python manage.py makemigrations &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+  
+
+  ai:
+    build:
+      context: ./ai_service
+      dockerfile: Dockerfile
+    container_name: ai_service
+    ports:
+      - "50051:50051"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_NAME: blood_db
+      DB_USER: blood_user
+      DB_PASSWORD: blood_pass
+      DB_PORT: 5432
+    volumes:
+      - ./ai_service:/app
+    command: python ai_server.py
+
+  db:
+    image: postgres:15
+    container_name: blood_db
+    environment:
+      POSTGRES_USER: blood_user
+      POSTGRES_PASSWORD: blood_pass
+      POSTGRES_DB: blood_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      # IMPORTANT: without -d, pg_isready defaults dbname to the username (blood_user),
+      # which causes: "FATAL: database 'blood_user' does not exist".
+      test: ["CMD-SHELL", "pg_isready -U blood_user -d blood_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@bloodconnect.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

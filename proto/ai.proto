@@ -1,0 +1,23 @@
+//H: just for test
+
+
+syntax = "proto3";
+// Assume you import common.proto here
+
+package ai;
+
+// Define a simple message for testing
+message TestRequest {
+  string ping = 1;
+}
+
+message TestResponse {
+  string status = 1;
+}
+
+service PredictionService {
+  // Your main prediction method goes here...
+
+  // New method for connection testing:
+  rpc HealthCheck (TestRequest) returns (TestResponse);
+}

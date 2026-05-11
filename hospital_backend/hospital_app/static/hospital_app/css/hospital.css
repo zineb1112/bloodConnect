@@ -1,0 +1,237 @@
+/* Page background */
+body, .login-page {
+    background-color: #E5DED2;
+}
+
+/* Logo inside login card */
+.login-card .logo {
+    width: 300px;   
+    height: auto;   
+    display: block;
+    margin: 0 auto; 
+}
+
+.login-page {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* top-align instead of center */
+    padding-top: 50px;       /* spacing from top */
+    min-height: 100vh;
+}
+
+/* Centered login card */
+.login-card {
+    background-color: #FBF7F4;
+    max-width: 600px;
+    width: 90%;
+    margin: 0 auto;
+    padding: 30px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    height: auto;
+    min-height: 600px;  /* optional */
+    border-radius: 8px; /* more rounded corners */
+}
+
+/* Signup card specific adjustments */
+.signup-card {
+    height: auto !important;
+    padding-bottom: 60px !important; /* extra space at the bottom */
+}
+
+/* Ensure page background shows below the card */
+.login-page {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 50px;
+    padding-bottom: 50px; /* extra bottom spacing */
+    min-height: 100vh;
+    background-color: #E5DED2;
+}
+
+
+/* Sign in text */
+.text-signin {
+    margin-top: 10px;  
+    margin-bottom: 30px; 
+    text-align: center;
+    color: #4a5565;
+}
+
+/* User type buttons */
+.user-btn {
+    flex: 1; 
+    text-align: center;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: #f8f8f8;
+    transition: background-color 0.2s, border-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem; 
+}
+.user-btn:hover {
+    background-color: #800020;
+    color: #FBF7F4;
+}
+.user-btn.active {
+    background-color: #800020;
+    color: #FBF7F4;
+}
+
+/* Icons */
+.icon {
+    width: 20px;
+    height: 20px;
+}
+
+.form-control {
+    padding: 0.75rem 1rem; 
+    font-size: 1rem;       
+    border-radius: 8px;
+}
+
+/* Login button */
+.btn-login {
+    background-color: #800020;
+    color: #FBF7F4;
+    font-weight: 600;
+    border: none;
+    padding: 0.75rem 1rem; 
+    font-size: 1rem;
+    border-radius: 8px;
+}
+.btn-login:hover {
+    background-color: #b3002b;
+}
+
+/* Forgot password / signup */
+.forgot-password, .signup {
+    color: #800020;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+.forgot-password:hover, .signup:hover {
+    text-decoration: underline;
+}
+
+/*reset page*/
+.reset-card {
+    width: 600px;       
+    height: 400px;
+    padding: 2rem;      
+    border-radius: 10px;
+     background-color: #FBF7F4;
+     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.reset-card .logo{
+    width: 300px;   
+    height: auto;   
+    display: block;
+    margin: 0 auto; 
+}
+
+.newpassword-card {
+    max-width: 600px;
+    height: 500px;
+    margin: 50px auto;
+    border-radius: 10px;
+    background-color: #FBF7F4;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+}
+
+.newpassword-card .logo{
+    width: 300px;   
+    height: auto;   
+    display: block;
+    margin: 0 auto;
+}
+
+
+/* HEADER */
+.bc-header {
+    background-color: #FBF7F4;
+    padding: 40px 60px;
+    border-bottom: 1px solid #ddd;
+}
+.bc-header>div{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0px ;
+    width: 100% !important;
+}
+
+.bc-logo {
+    height: 100px;
+    width: 280px;
+}
+
+/* NAV LINKS */
+.nav-link-hover {
+    color: #333;
+    text-decoration: none;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+.nav-link-hover:hover {
+    color: #800020;
+}
+
+/* SIGN UP BUTTON */
+.bc-signup-btn {
+    background-color: #779ABF;
+    color: #fff;
+    padding: 8px 18px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.bc-signup-btn:hover {
+    opacity: 0.8;
+}
+
+/* HERO SECTION */
+.hero-section {
+    background-color: #FBF7F4;
+    padding: 60px 0;
+}
+
+.hero-text h1 {
+    font-size: 40px;
+    font-weight: bold;
+    color: #333;
+}
+
+.hero-text p {
+    font-size: 18px;
+    margin-top: 10px;
+    color: #444;
+}
+
+.hero-line {
+    width: 180px;
+    height: 3px;
+    background-color: #800020;
+    border: none;
+    margin-top: 15px;
+}
+
+.hero-img {
+    width: 600px;
+    border-radius: 12px;
+}
+
+.signup-card {
+    height: auto !important;
+    padding-bottom: 40px !important;
+}
+
+
+

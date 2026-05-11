@@ -1,0 +1,79 @@
+{% extends 'donor/base.html' %}
+{% load static %}
+
+{% block title %}About | BloodConnect{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'donor/css/about.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<section class="about-layout">
+
+    <!-- LEFT: Mission -->
+    <aside class="about-left">
+        <h1 class="big-title">About BloodConnect</h1>
+        <p class="subtitle">
+            Connecting donors with those in need. Saving lives together.
+        </p>
+
+        <h2 class="section-title">Our Mission</h2>
+        <p>
+            BloodConnect is dedicated to connecting voluntary blood donors
+            with patients in need, ensuring lifesaving blood reaches the
+            right people at the right time.
+        </p>
+    </aside>
+
+    <!-- RIGHT: Content -->
+    <div class="about-right">
+
+        <section class="about-block">
+            <h2 class="section-title">Our Vision</h2>
+            <p>
+                We envision a world where no patient suffers due to a shortage
+                of blood donations.
+            </p>
+        </section>
+
+        <section class="about-block">
+            <h2 class="section-title">How It Works</h2>
+
+            <div class="steps">
+                <div class="step">
+                    <h3>1. Register as a Donor</h3>
+                    <p>Create your profile and share your availability to donate blood.</p>
+                </div>
+
+                <div class="step">
+                    <h3>2. Submit Requests</h3>
+                    <p>Hospitals or patients submit blood requests through our platform.</p>
+                </div>
+
+                <div class="step">
+                    <h3>3. Save Lives</h3>
+                    <p>BloodConnect matches donors with recipients efficiently and safely.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="about-block values">
+            <h2 class="section-title">Our Core Values</h2>
+            <ul>
+                <li>Lifesaving</li>
+                <li>Selfless</li>
+                <li>Community-driven</li>
+                <li>Trust & Secure</li>
+            </ul>
+        </section>
+
+        <section class="about-block cta">
+            <h2 class="section-title">Join Us and Save Lives</h2>
+            <a href="{% url 'donor' %}" class="btn">Register as a Donor</a>
+        </section>
+
+    </div>
+</section>
+
+{% endblock %}

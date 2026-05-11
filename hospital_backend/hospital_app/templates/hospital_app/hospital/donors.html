@@ -1,0 +1,241 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View Donors</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Custom CSS (hospital dashboard style) -->
+    <link rel="stylesheet" href="{% static 'hospital_app/css/dashboard.css' %}?v=4">
+</head>
+
+<body>
+<div class="d-flex">
+
+    <!-- Sidebar -->
+    <div class="sidebar d-flex flex-column">
+        <div class="logo">
+            <img src="{% static 'hospital_app/images/bloodconnet.png' %}" alt="Hospital Logo">
+        </div>
+
+        <nav class="nav flex-column">
+            <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"
+               href="{% url 'dashboard' %}">
+                <i class="fas fa-home"></i> Dashboard
+            </a>
+
+            <a class="nav-link {% if request.resolver_match.url_name == 'post_request' %}active{% endif %}"
+               href="{% url 'post_request' %}">
+                <i class="fas fa-plus-circle"></i> Blood Requests
+            </a>
+
+            <a class="nav-link {% if request.resolver_match.url_name == 'forcast' %}active{% endif %}"
+               href="{% url 'forcast' %}">
+                <i class="fas fa-chart-line"></i> Forecast
+            </a>
+
+            <a class="nav-link {% if request.resolver_match.url_name == 'campaign' %}active{% endif %}"
+               href="{% url 'campaign' %}">
+                <i class="fas fa-bullhorn"></i> Campaigns
+            </a>
+
+            <a class="nav-link {% if request.resolver_match.url_name == 'donors' %}active{% endif %}"
+               href="{% url 'donors' %}">
+                <i class="fas fa-user-friends"></i> Donors
+            </a>
+
+            <a class="nav-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}"
+               href="{% url 'profile' %}">
+                <i class="fas fa-user"></i> Profile
+            </a>
+        </nav>
+
+        <a href="{% url 'logout' %}" class="logout">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content p-4">
+
+        <!-- Page Title -->
+        <h1 class="welcome-msg">Available Donors</h1>
+        <p class="main-phrase">Search and filter donors in your region.</p>
+
+        <!-- Search / Filter Form -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <form method="get" class="row g-3">
+
+                    <div class="col-md-4">
+                        <label class="form-label">Blood Type</label>
+                        <select class="form-select" name="blood_type">
+                            <option value="">All</option>
+                            <option value="A+"  {% if filters.blood_type == "A+" %}selected{% endif %}>A+</option>
+                            <option value="A-"  {% if filters.blood_type == "A-" %}selected{% endif %}>A-</option>
+                            <option value="B+"  {% if filters.blood_type == "B+" %}selected{% endif %}>B+</option>
+                            <option value="B-"  {% if filters.blood_type == "B-" %}selected{% endif %}>B-</option>
+                            <option value="AB+" {% if filters.blood_type == "AB+" %}selected{% endif %}>AB+</option>
+                            <option value="AB-" {% if filters.blood_type == "AB-" %}selected{% endif %}>AB-</option>
+                            <option value="O+"  {% if filters.blood_type == "O+" %}selected{% endif %}>O+</option>
+                            <option value="O-"  {% if filters.blood_type == "O-" %}selected{% endif %}>O-</option>
+                        </select>
+                        <small class="text-muted">Matches the donor’s recorded blood type.</small>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">City (Location)</label>
+                        <input type="text"
+                               class="form-control"
+                               name="location"
+                               placeholder="e.g. Agadir"
+                               value="{{ filters.location|default:'' }}">
+                        <small class="text-muted">We currently treat this as <b>city</b>.</small>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Last Donation Before</label>
+                        <input type="date"
+                               class="form-control"
+                               name="last_donation"
+                               value="{{ filters.last_donation|default:'' }}">
+                        <small class="text-muted">Optional (we can wire this later).</small>
+                    </div>
+
+                    <div class="col-12 d-flex gap-2">
+                        <button type="submit" class="btn btn-custom w-100 mt-2">
+                            <i class="fas fa-search"></i> Search Donors
+                        </button>
+
+                        <a href="{% url 'donors' %}" class="btn btn-outline-secondary w-100 mt-2">
+                            <i class="fas fa-rotate-left"></i> Reset
+                        </a>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+        <!-- Donors Table -->
+        <div class="card shadow-sm">
+            <div class="card-body d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <div>
+                    <h5 class="mb-0">Donors List</h5>
+                    <small class="text-muted">
+                        Showing <b>{% if donors %}{{ donors|length }}{% else %}0{% endif %}</b> donor(s)
+                    </small>
+                </div>
+
+                {% if donors %}
+                    <span class="badge bg-success">
+                        <i class="fas fa-circle-check"></i> Live data from Donor Service
+                    </span>
+                {% else %}
+                    <span class="badge bg-secondary">
+                        <i class="fas fa-circle-info"></i> No results yet
+                    </span>
+                {% endif %}
+            </div>
+
+            <div class="card-body pt-0">
+                <div class="table-responsive">
+                    <table class="table table-striped align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Blood Type</th>
+                                <th>Location</th>
+                                <th>Last Donation</th>
+                                <th>Availability</th>
+                                <th>Contact</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% if error %}
+                                <tr>
+                                    <td colspan="6" class="text-danger text-center py-4">
+                                        <i class="fas fa-triangle-exclamation"></i>
+                                        {{ error }}
+                                    </td>
+                                </tr>
+
+                            {% elif donors %}
+                                {% for d in donors %}
+                                    <tr>
+                                        <td class="fw-semibold">{{ d.full_name|default:"-" }}</td>
+
+                                        <td>
+                                            {% if d.blood_type %}
+                                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle">
+                                                    {{ d.blood_type }}
+                                                </span>
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+
+                                        <td>
+                                            {% if d.city %}{{ d.city }}{% else %}<span class="text-muted">-</span>{% endif %}
+                                            {% if d.region %}<span class="text-muted"> • </span>{{ d.region }}{% endif %}
+                                        </td>
+
+                                        <td>
+                                            {% if d.last_donation_date %}
+                                                {{ d.last_donation_date }}
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+
+                                        <td>
+                                            {% if d.availability %}
+                                                <span class="badge bg-success">Available</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">Unavailable</span>
+                                            {% endif %}
+                                        </td>
+
+                                        <td>
+                                            {% if d.phone_number %}
+                                                <a href="tel:{{ d.phone_number }}" class="btn btn-info btn-sm donor-btn">
+                                                    <i class="fas fa-phone"></i> Call
+                                                </a>
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+
+                            {% else %}
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted py-4">
+                                        No donors found for your filters.
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

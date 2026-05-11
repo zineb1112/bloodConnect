@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package forecasting;
+
+service ForecastingService {
+  rpc PredictNextMonth (ForecastRequest) returns (ForecastResponse);
+}
+
+message ForecastRequest {
+  string city = 1;
+  string region = 2;
+}
+
+message BloodTypeForecast {
+  string blood_type = 1;
+  double predicted_quantity = 2;
+  double confidence = 3;
+}
+
+message ForecastResponse {
+  string city = 1;
+  string region = 2;
+  string month = 3;
+  repeated BloodTypeForecast forecasts = 4;
+}

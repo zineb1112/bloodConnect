@@ -1,0 +1,56 @@
+{% extends 'donor/base.html' %}
+{% load static %}
+
+{% block title %}Profile | BloodConnect{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <!-- Profile Header -->
+    <div class="card profile-header">
+        <div class="profile-info">
+            <div class="avatar">
+                {{ donor.full_name|slice:":1" }}
+            </div>
+            <div>
+                <h3>{{ donor.full_name }}</h3>
+                <p>{{ donor.blood_type }} • {{ donor.city }}</p>
+                <small>Member since {{ donor.created_at|date:"M Y" }}</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Details -->
+    <div class="profile-grid">
+
+        <div class="card">
+            <h3>Personal Information</h3>
+            <p><strong>Email:</strong> {{ donor.email }}</p>
+            <p><strong>Phone:</strong> {{ donor.phone }}</p>
+            <p><strong>City:</strong> {{ donor.city }}</p>
+            <p><strong>Blood Type:</strong> {{ donor.blood_type }}</p>
+        </div>
+
+        <div class="card">
+            <h3>Donation Stats</h3>
+            <p><strong>Total Donations:</strong> 4</p>
+            <p><strong>Last Donation:</strong> 12 June 2025</p>
+            <p><strong>Status:</strong> Active Donor</p>
+        </div>
+
+    </div>
+
+    <!-- Actions -->
+    <div class="card">
+        <h3>Account Actions</h3>
+        <div class="actions">
+            <a href="{% url 'edit_view' %}" class="action-box">Edit Profile</a>
+            <a href="{% url 'newpasswordView' %}" class="action-box">Change Password</a>
+            <a href="{% url 'logout' %}" class="action-box">Logout</a>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

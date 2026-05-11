@@ -1,0 +1,148 @@
+/* ---------------------- */
+/* ABOUT PAGE LAYOUT */
+/* ---------------------- */
+
+.about-layout {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 60px;
+    padding: 60px;
+}
+
+/* ---------------------- */
+/* LEFT SIDE */
+/* ---------------------- */
+
+.about-left {
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 25px;
+    border-left: 6px solid #800020;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.big-title {
+    font-size: 2.6rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.section-title {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #800020;
+    margin-bottom: 15px;
+}
+
+/* ---------------------- */
+/* RIGHT SIDE */
+/* ---------------------- */
+
+.about-right {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.about-block {
+    background: #ffffff;
+    padding: 35px;
+    border-radius: 25px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.about-layout p {
+    font-size: 1.05rem;
+    color: #444;
+    line-height: 1.7;
+}
+
+/* ---------------------- */
+/* STEPS */
+/* ---------------------- */
+
+.steps {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.step h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #222;
+}
+
+.step p {
+    margin-left: 10px;
+    color: #555;
+}
+
+/* ---------------------- */
+/* VALUES */
+/* ---------------------- */
+
+.values ul {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    padding: 0;
+}
+
+.values li {
+    background: #ffe5e5;
+    color: #800020;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+/* ---------------------- */
+/* CTA */
+/* ---------------------- */
+
+.cta {
+    text-align: center;
+    background: linear-gradient(135deg, #800020, #a00028);
+    color: white;
+}
+
+.cta .section-title {
+    color: white;
+}
+
+.cta .btn {
+    display: inline-block;
+    margin-top: 20px;
+    background: white;
+    color: #800020;
+    padding: 12px 32px;
+    border-radius: 30px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.cta .btn:hover {
+    opacity: 0.85;
+}
+
+/* ---------------------- */
+/* RESPONSIVE */
+/* ---------------------- */
+
+@media (max-width: 900px) {
+    .about-layout {
+        grid-template-columns: 1fr;
+        padding: 40px 25px;
+    }
+}

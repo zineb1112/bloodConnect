@@ -1,0 +1,214 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 220px;
+    background-color: #FBF7F4;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding: 20px 0;
+}
+
+.logo img {
+    width: 220px;
+    margin-bottom: 40px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.nav-link {
+    color: #333;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    border-radius: 6px;
+    transition: all 0.2s;
+    text-decoration: none;
+}
+
+.nav-link i {
+    margin-right: 10px;
+}
+
+.nav-link:hover {
+    background-color: #E5DED2;
+    color: #800020 !important;
+}
+
+.nav-link.active {
+    background-color: #800020;
+    color: #fff !important;
+}
+
+/* Logout at bottom */
+.logout {
+    margin-top: auto;
+    padding: 12px 20px;
+    color: #fff;
+    background-color: #800020;
+    border-radius: 6px;
+    text-align: center;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+
+.logout:hover {
+    background-color: #FBF7F4;
+    color: #800020 !important;
+}
+
+/* Main content */
+.main-content {
+    flex-grow: 1;
+    background-color: #E5DED2;
+    padding: 30px;
+}
+
+.main-phrase {
+    font-size: 1.5rem;
+    font-weight: 300;
+    color: #333;
+}
+
+.welcome-msg {
+    color: #800020;
+}
+
+.card {
+    border-radius: 10px;
+}
+
+.card-title {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+.card-text {
+    font-size: 2rem;
+    font-weight: 600;
+}
+
+.card-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #800020;
+    margin-bottom: 10px;
+}
+
+
+div.main-content a.btn.btn-custom {
+    background-color: #800020 !important;
+    color: #fff !important;
+    font-weight: 300 !important;               
+    font-family: 'Poppins', sans-serif !important; 
+    border-radius: 8px !important;
+    padding: 14px 0 !important;
+    font-size: 1.1rem !important;
+    text-transform: none !important;          
+}
+
+div.main-content a.btn.btn-custom:hover {
+    background-color: #a0002d !important;
+    color: #fff !important;
+}
+
+
+/* Add Campaign button */
+div.main-content a.btn.btn-success {
+    background-color: #e6c147 !important; /* new color */
+    color: #fff !important;                /* text color */
+    font-weight: 300;
+    font-family: 'Poppins', sans-serif;
+    border-radius: 8px;
+    padding: 12px 0;
+    font-size: 1.1rem;
+    text-transform: none;
+}
+
+div.main-content a.btn.btn-success:hover {
+    background-color:  #cca832 !important;  /* slightly darker for hover */
+}
+
+/* View Donors button */
+div.main-content a.btn.btn-info {
+    background-color: #779ABf !important;  /* new color */
+    color: #fff !important;
+    font-weight: 300;
+    font-family: 'Poppins', sans-serif;
+    border-radius: 8px;
+    padding: 12px 0;
+    font-size: 1.1rem;
+    text-transform: none;
+}
+
+div.main-content a.btn.btn-info:hover {
+    background-color: #6489a3 !important;  /* slightly darker for hover */
+}
+
+
+/* Align buttons evenly */
+.action-buttons .col-md-4 {
+    display: flex;
+    justify-content: center;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+    .welcome-msg {
+        font-size: 2rem;
+    }
+    .main-phrase {
+        font-size: 1.3rem;
+    }
+    .card-number {
+        font-size: 2rem;
+    }
+}
+
+
+/* Donor table buttons - same size */
+table.table tbody tr td a.donor-btn {
+    font-size: 0.85rem !important;
+    padding: 4px 8px !important;       
+    border-radius: 6px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important; 
+    gap: 4px !important;
+    width: 100px !important;           
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+/* Make all form fields focus border deep red */
+input:focus, select:focus, textarea:focus {
+border-color: #800020 !important;
+box-shadow: 0 0 0 0.2rem rgba(128, 0, 32, 0.25) !important;
+outline: none !important;
+}
+
+/* Update Profile button */
+div.main-content .btn-custom {
+    background-color: #800020 !important;  
+    color: #fff !important;
+    font-weight: 400 !important;           
+    font-family: 'Poppins', sans-serif !important; 
+    border-radius: 8px !important;
+    padding: 8px 20px !important;           
+    font-size: 1rem !important;             
+    min-width: 140px;                        
+    text-transform: none !important;          
+    transition: background 0.2s ease;      
+}
+
+div.main-content .btn-custom:hover {
+    background-color: #a0002d !important;  /* slightly darker on hover */
+    color: #fff !important;
+}
+
+
+

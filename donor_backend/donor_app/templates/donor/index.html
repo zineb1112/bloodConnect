@@ -1,0 +1,70 @@
+{% extends 'donor/base.html' %}
+{% load static %}
+
+{% block title %}Home | BloodConnect{% endblock %}
+
+{% block content %}
+
+<section class="hero">
+  <!-- Background decoration -->
+  <div class="hero-bg">
+    <span class="blob blob-1"></span>
+    <span class="blob blob-2"></span>
+    <span class="grid"></span>
+  </div>
+
+  <div class="hero-inner">
+
+    <div class="hero-text">
+      <div class="hero-badge">
+        <i class="fa-solid fa-heart-pulse"></i>
+        <span>Save lives in minutes</span>
+      </div>
+
+      <h1>
+        Your <span class="highlight">Blood</span> has the<br>
+        power to paint a smile<br>
+        on someone else’s <span class="highlight">face</span>.
+      </h1>
+
+      <p>
+        Donate blood and help save lives. Every drop counts — and your help can be the reason
+        a family gets their loved one back.
+      </p>
+
+      <div class="hero-actions">
+        <a href="{% url 'registerView' %}" class="btn btn-primary">
+          Donate Now <i class="fa-solid fa-arrow-right"></i>
+        </a>
+
+        <a href="{% url 'about' %}" class="btn btn-secondary">
+          Learn More
+        </a>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat">
+          <div class="stat-num">1</div>
+          <div class="stat-label">Donation can help up to 3 people</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">10m</div>
+          <div class="stat-label">Quick registration & matching</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">24/7</div>
+          <div class="stat-label">Emergency requests supported</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-img">
+      <div class="hero-img-card">
+        <img src="{% static 'donor/images/landing.png' %}" alt="blood donation">
+      </div>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

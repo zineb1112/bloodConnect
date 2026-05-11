@@ -1,0 +1,123 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up | BloodConnect</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'hospital_app/css/hospital.css' %}?v=2">
+</head>
+<body>
+
+<div class="login-page d-flex justify-content-center align-items-start" style="padding-top:50px; min-height:100vh;">
+    <!-- Signup card -->
+    <div class="login-card signup-card p-4 shadow">
+
+        <!-- Logo -->
+        <div class="text-center mb-3">
+            <img src="{% static 'hospital_app/images/bloodconnet.png' %}" alt="Logo" class="logo">
+        </div>
+
+        <!-- Title -->
+        <h5 class="text-center text-signin mb-4">Create Hospital Account</h5>
+
+        <!-- Signup Form -->
+        <form method="POST" action="{% url 'signup' %}">
+            {% csrf_token %}
+
+            {% if errors %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>Error:</strong>
+                    {% for field, error_list in errors.items %}
+                        <div>{{ field }}: {{ error_list|join:", " }}</div>
+                    {% endfor %}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endif %}
+
+            <!-- USER ACCOUNT SECTION -->
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                    <div class="text-danger small mt-1">{{ form.username.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <div class="text-danger small mt-1">{{ form.email.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                {{ form.password }}
+                {% if form.password.errors %}
+                    <div class="text-danger small mt-1">{{ form.password.errors }}</div>
+                {% endif %}
+            </div>
+
+            <!-- HOSPITAL FIELDS -->
+            <div id="hospital-fields">
+                <div class="mb-3">
+                    <label class="form-label">Hospital Name</label>
+                    {{ form.hospital_name }}
+                    {% if form.hospital_name.errors %}
+                        <div class="text-danger small mt-1">{{ form.hospital_name.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Phone</label>
+                    {{ form.hospital_phone }}
+                    {% if form.hospital_phone.errors %}
+                        <div class="text-danger small mt-1">{{ form.hospital_phone.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Region</label>
+                    {{ form.hospital_region }}
+                    {% if form.hospital_region.errors %}
+                        <div class="text-danger small mt-1">{{ form.hospital_region.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">City</label>
+                    {{ form.hospital_city }}
+                    {% if form.hospital_city.errors %}
+                        <div class="text-danger small mt-1">{{ form.hospital_city.errors }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Address</label>
+                    {{ form.hospital_address }}
+                    {% if form.hospital_address.errors %}
+                        <div class="text-danger small mt-1">{{ form.hospital_address.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-login w-100 mb-3">Create Account</button>
+        </form>
+
+        <!-- Link to login -->
+        <div class="text-center">
+            Already have an account? <a href="{% url 'login' %}" class="signup">Login</a>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

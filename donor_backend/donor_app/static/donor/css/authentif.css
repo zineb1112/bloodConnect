@@ -1,0 +1,201 @@
+/* ====================== */
+/* GLOBAL BACKGROUND */
+/* ====================== */
+
+body,
+.login-page {
+    background: linear-gradient(135deg, #E5DED2, #E5DED2);
+    font-family: "Poppins", sans-serif;
+}
+
+/* ====================== */
+/* AUTH CARD (LOGIN + SIGNUP) */
+/* ====================== */
+
+.login-card,
+.signup-card {
+    background-color: #FBF7F4;
+    max-width: 600px;
+    width: 90%;
+    margin: 0 auto;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* ====================== */
+/* LOGO */
+/* ====================== */
+
+.logo {
+    width: 300px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+/* ====================== */
+/* TITLES */
+/* ====================== */
+
+.text-signin,
+.signup-card h4 {
+    margin-top: 10px;
+    margin-bottom: 30px;
+    text-align: center;
+    color: #4a5565;
+    font-weight: 600;
+}
+
+/* ====================== */
+/* USER TYPE SWITCH (LOGIN ONLY) */
+/* ====================== */
+
+.user-btn {
+    flex: 1;
+    text-align: center;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: #f8f8f8;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.user-btn:hover,
+.user-btn.active {
+    background-color: #800020;
+    color: #FBF7F4;
+}
+
+/* ====================== */
+/* FORMS (LOGIN + SIGNUP) */
+/* ====================== */
+
+.form-label {
+    font-weight: 500;
+    color: #444;
+}
+
+.form-control,
+.form-select {
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    border-radius: 8px;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #800020;
+    box-shadow: 0 0 0 0.15rem rgba(128, 0, 32, 0.25);
+}
+
+/* Checkbox */
+.form-check-input {
+    border-radius: 4px;
+}
+
+.form-check-input:checked {
+    background-color: #800020;
+    border-color: #800020;
+}
+
+/* ====================== */
+/* BUTTONS */
+/* ====================== */
+
+.btn-login,
+.signup-card button {
+    background-color: #800020;
+    color: #FBF7F4;
+    font-weight: 600;
+    border: none;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    border-radius: 8px;
+    transition: 0.2s;
+}
+
+.btn-login:hover,
+.signup-card button:hover {
+    background-color: #b3002b;
+}
+
+/* ====================== */
+/* LINKS */
+/* ====================== */
+
+.forgot-password,
+.signup-card a,
+.signup {
+    color: #800020;
+    text-decoration: none;
+    font-weight: 500;
+    transition: 0.2s;
+}
+
+.forgot-password:hover,
+.signup-card a:hover,
+.signup:hover {
+    text-decoration: underline;
+}
+
+/* ====================== */
+/* ALERTS */
+/* ====================== */
+
+.alert {
+    border-radius: 12px;
+    font-size: 0.9rem;
+}
+
+/* ====================== */
+/* RESPONSIVE */
+/* ====================== */
+
+@media (max-width: 500px) {
+    .login-card,
+    .signup-card {
+        margin: 0 15px;
+        padding: 25px;
+    }
+}
+
+
+/*reset page*/
+.reset-card {
+    width: 600px;       
+    height: 400px;
+    padding: 2rem;      
+    border-radius: 10px;
+     background-color: #FBF7F4;
+     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.reset-card .logo{
+    width: 300px;   
+    height: auto;   
+    display: block;
+    margin: 0 auto; 
+}
+
+
+.newpassword-card {
+    max-width: 600px;
+    height: 500px;
+    margin: 50px auto;
+    border-radius: 10px;
+    background-color: #FBF7F4;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+}
+
+.newpassword-card .logo{
+    width: 300px;   
+    height: auto;   
+    display: block;
+    margin: 0 auto;
+}
