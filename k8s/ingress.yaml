@@ -1,0 +1,39 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+
+metadata:
+  name: bloodconnect-ingress
+  namespace: bloodconnect
+
+spec:
+  ingressClassName: nginx
+
+  rules:
+
+    # HOSPITAL
+    - host: hospital.bloodconnect.local
+
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+
+            backend:
+              service:
+                name: hospital-service
+                port:
+                  number: 8000
+
+    # DONOR
+    - host: donor.bloodconnect.local
+
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+
+            backend:
+              service:
+                name: donor-service
+                port:
+                  number: 8000

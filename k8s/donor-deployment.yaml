@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: donor-deployment
+  namespace: bloodconnect
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: donor-backend
+
+  template:
+    metadata:
+      labels:
+        app: donor-backend
+
+    spec:
+      containers:
+        - name: donor-container
+          image: rihab10/donor-backend:v1
+
+          ports:
+            - containerPort: 8000
+
+          imagePullPolicy: Always
+
+          env:
+            - name: DB_HOST
+              value: db
+
+            - name: DB_PORT
+              value: "5432"
+
+            - name: DB_NAME
+              value: blood_db
+
+            - name: DB_USER
+              value: blood_user
+
+            - name: DB_PASSWORD
+              value: blood_pass
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8000
+
+            initialDelaySeconds: 30
+            periodSeconds: 10
+
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8000
+
+            initialDelaySeconds: 10
+            periodSeconds: 5
