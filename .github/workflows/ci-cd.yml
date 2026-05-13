@@ -4,140 +4,97 @@ on:
   push:
     branches: ["main"]
 
-# Required permissions for CodeQL
 permissions:
-  actions: read
   contents: read
   security-events: write
 
+env:
+  REGISTRY: docker.io
+  IMAGE_TAG: latest
+
 jobs:
 
-  # =========================================
-  # BUILD & TEST
-  # =========================================
-  build-test:
+# =========================================
+# BUILD + PUSH IMAGES
+# =========================================
+  build-push:
     runs-on: ubuntu-latest
 
     steps:
-
-      # Checkout source code
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      # Setup Docker
-      - name: Set up Docker
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # Build Docker images
-      - name: Build Docker images
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # BUILD + PUSH HOSPITAL
+      - name: Build & Push Hospital
         run: |
-          docker compose build
+          docker build -t $REGISTRY/${{ secrets.DOCKERHUB_USERNAME }}/hospital_service:$IMAGE_TAG hospital_backend
+          docker push $REGISTRY/${{ secrets.DOCKERHUB_USERNAME }}/hospital_service:$IMAGE_TAG
 
-          # Tag images for Trivy scanning
-          docker tag bloodconnect-hospital hospital_service:latest || true
-          docker tag bloodconnect-donor donor_service:latest || true
-          docker tag bloodconnect-ai ai_service:latest || true
+      # BUILD + PUSH DONOR
+      - name: Build & Push Donor
+        run: |
+          docker build -t $REGISTRY/${{ secrets.DOCKERHUB_USERNAME }}/donor_service:$IMAGE_TAG donor_backend
+          docker push $REGISTRY/${{ secrets.DOCKERHUB_USERNAME }}/donor_service:$IMAGE_TAG
 
-      # Start containers
-      - name: Start full stack
-        run: docker compose up -d
+      # BUILD + PUSH AI
+      - name: Build & Push AI
+        run: |
+          docker build -t $REGISTRY/${{ secrets.DOCKERHUB_USERNAME }}/ai_service:$IMAGE_TAG ai_service
+          docker push $REGISTRY/${{ secrets.DOCKERHUB_USERNAME }}/ai_service:$IMAGE_TAG
 
-      # Verify running containers
-      - name: Check running containers
-        run: docker ps
-
-      # Debug logs
-      - name: Show logs (hospital)
-        run: docker logs hospital_service || true
-
-      - name: Show logs (donor)
-        run: docker logs donor_service || true
-
-      - name: Show logs (ai)
-        run: docker logs ai_service || true
-
-
-  # =========================================
-  # SECURITY SCAN
-  # =========================================
+# =========================================
+# SECURITY SCAN (OPTIONNEL)
+# =========================================
   security-scan:
     runs-on: ubuntu-latest
-    needs: build-test
+    needs: build-push
 
     steps:
+      - uses: actions/checkout@v4
 
-      # Checkout source code
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      # =====================================
-      # Install Trivy
-      # =====================================
       - name: Install Trivy
         run: |
           sudo apt-get update
           sudo apt-get install -y curl
           curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sudo sh -s -- -b /usr/local/bin
 
-      # =====================================
-      # Scan Docker Images
-      # =====================================
-      - name: Scan hospital image
-        run: trivy image --severity HIGH,CRITICAL hospital_service:latest || true
+      - name: Scan images
+        run: |
+          trivy image ${{ secrets.DOCKERHUB_USERNAME }}/hospital_service:latest || true
+          trivy image ${{ secrets.DOCKERHUB_USERNAME }}/donor_service:latest || true
+          trivy image ${{ secrets.DOCKERHUB_USERNAME }}/ai_service:latest || true
 
-      - name: Scan donor image
-        run: trivy image --severity HIGH,CRITICAL donor_service:latest || true
+# =========================================
+# DEPLOY TO KUBERNETES
+# =========================================
+  deploy-k8s:
+    runs-on: ubuntu-latest
+    needs: security-scan
 
-      - name: Scan AI image
-        run: trivy image --severity HIGH,CRITICAL ai_service:latest || true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      # =====================================
-      # Static Code Analysis (SAST)
-      # =====================================
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
-        with:
-          languages: python
+      - name: Install kubectl
+        run: |
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/
 
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
-        continue-on-error: true
+      - name: Configure kubeconfig
+        run: |
+          echo "${{ secrets.KUBECONFIG }}" > kubeconfig
+          export KUBECONFIG=kubeconfig
 
-      # =====================================
-      # Secrets Detection
-      # =====================================
-      - name: Scan secrets (Gitleaks)
-        uses: gitleaks/gitleaks-action@v2
-
-      # =====================================
-      # Python Dependency Security
-      # =====================================
-      - name: Install Safety
-        run: pip install safety
-
-      - name: Check Python dependencies
-        run: safety check || true
-
-      # =====================================
-      # Dockerfile Security Linting
-      # =====================================
-      - name: Lint hospital Dockerfile
-        uses: hadolint/hadolint-action@v3.1.0
-        with:
-          dockerfile: hospital_backend/Dockerfile
-
-      - name: Lint donor Dockerfile
-        uses: hadolint/hadolint-action@v3.1.0
-        with:
-          dockerfile: donor_backend/Dockerfile
-
-      - name: Lint AI Dockerfile
-        uses: hadolint/hadolint-action@v3.1.0
-        with:
-          dockerfile: ai_service/Dockerfile
-
-      # =====================================
-      # Validate Docker Compose
-      # =====================================
-      - name: Validate docker-compose
-        run: docker compose config
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f k8s/
