@@ -31,4 +31,4 @@ COPY . .
 EXPOSE 8000
 
 # Command: Wait for DB, run migrations, then start server
-CMD ["sh", "-c", "/usr/local/bin/wait-for-db.sh db python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
+CMD ["sh", "-c", "/usr/local/bin/wait-for-db.sh db && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
