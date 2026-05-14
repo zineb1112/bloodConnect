@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
 
 urlpatterns = [
@@ -16,4 +16,5 @@ urlpatterns = [
     path('api/forecast/', views.get_forecast, name='get_forecast'), #H: API endpoint for forecast predictions
     path("donors/", views.donors_page, name="donors"),
     path("api/internal/blood-requests/", views.internal_blood_requests_api, name="internal_blood_requests_api"),
+    path('', include('django_prometheus.urls')),
 ]

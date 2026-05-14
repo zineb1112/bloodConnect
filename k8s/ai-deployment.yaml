@@ -20,8 +20,7 @@ spec:
     spec:
       containers:
         - name: ai-container
-          image: rihab10/ai-service:v1
-
+          image: rihab10/ai-service:v2
           ports:
             - containerPort: 50051
 

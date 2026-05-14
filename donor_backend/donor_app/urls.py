@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
 
 
@@ -27,4 +27,5 @@ urlpatterns = [
 
     # Hospital uses this internal endpoint:
     path("api/donors/internal/donors/", views.internal_donors_api, name="internal_donors_api"),
+    path('', include('django_prometheus.urls')),
 ]

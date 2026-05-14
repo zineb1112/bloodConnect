@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: hospital-container
-          image: rihab10/hospital-backend:v1
+          image: rihab10/hospital-backend:v3
           imagePullPolicy: Always
 
           ports:

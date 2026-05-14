@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: donor-container
-          image: rihab10/donor-backend:v1
+          image: rihab10/donor-backend:v3
 
           ports:
             - containerPort: 8000
