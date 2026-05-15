@@ -21,24 +21,24 @@ jobs:
 
       - name: Build Hospital Image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/hospital-backend:latest ./hospital
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/hospital-backend:v3 ./hospital_backend
 
       - name: Push Hospital Image
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/hospital-backend:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/hospital-backend:v3
 
       - name: Build Donor Image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/donor-backend:latest ./donor
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/donor-backend:v3 ./donor_backend
 
       - name: Push Donor Image
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/donor-backend:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/donor-backend:v3
 
       - name: Build AI Image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/ai-service:latest ./ai
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/ai-service:v3 ./ai_service
 
       - name: Push AI Image
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/ai-service:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/ai-service:v3
