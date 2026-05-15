@@ -22,6 +22,14 @@ spec:
         - name: donor-container
           image: rihab10/donor-backend:v3
 
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+
           ports:
             - containerPort: 8000
 
