@@ -109,48 +109,64 @@ jobs:
 # =========================
 # DEPLOY TO KUBERNETES
 # =========================
-  deploy:
-    name: Deploy to Kubernetes
-    runs-on: ubuntu-latest
-    needs: build-and-scan
+deploy:
+  name: Deploy to Kubernetes
+  runs-on: ubuntu-latest
+  needs: build-and-scan
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      # =========================
-      # INSTALL KUBECTL
-      # =========================
-      - name: Setup kubectl
-        uses: azure/setup-kubectl@v4
+    # =========================
+    # AUTH GOOGLE CLOUD
+    # =========================
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: '${{ secrets.GCP_SA_KEY }}'
 
-      # =========================
-      # CONFIGURE KUBECONFIG
-      # =========================
-      - name: Authenticate to GKE
-        uses: google-github-actions/get-gke-credentials@v2
-        with:
-          cluster_name: bloodconnect-cluster
-          location: us-central1-a
-          project_id: bloodconnect-496511
+    # =========================
+    # INSTALL GKE AUTH PLUGIN
+    # =========================
+    - name: Install GKE auth plugin
+      run: |
+        gcloud components install gke-gcloud-auth-plugin
 
-      # =========================
-      # VERIFY CLUSTER
-      # =========================
-      - name: Check cluster
-        run: kubectl get nodes
+    # =========================
+    # INSTALL KUBECTL
+    # =========================
+    - name: Setup kubectl
+      uses: azure/setup-kubectl@v4
 
-      # =========================
-      # DEPLOY
-      # =========================
-      - name: Apply Kubernetes manifests
-        run: kubectl apply -f k8s/
+    # =========================
+    # GET GKE CREDENTIALS
+    # =========================
+    - name: Authenticate to GKE
+      uses: google-github-actions/get-gke-credentials@v2
+      with:
+        cluster_name: bloodconnect-cluster
+        location: us-central1-a
+        project_id: bloodconnect-496511
 
-      # =========================
-      # ROLLOUT STATUS (IMPORTANT)
-      # =========================
-      - name: Verify rollout
-        run: |
-          kubectl rollout status deployment hospital-deployment -n bloodconnect
-          kubectl rollout status deployment donor-deployment -n bloodconnect
-          kubectl rollout status deployment ai-deployment -n bloodconnect
+    # =========================
+    # VERIFY CLUSTER
+    # =========================
+    - name: Check cluster
+      run: kubectl get nodes
+
+    # =========================
+    # DEPLOY
+    # =========================
+    - name: Apply Kubernetes manifests
+      run: kubectl apply -f k8s/
+
+    # =========================
+    # VERIFY ROLLOUT
+    # =========================
+    - name: Verify rollout
+      run: |
+        kubectl rollout status deployment hospital-deployment -n bloodconnect
+        kubectl rollout status deployment donor-deployment -n bloodconnect
+        kubectl rollout status deployment ai-deployment -n bloodconnect
+
