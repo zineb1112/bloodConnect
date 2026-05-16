@@ -4,14 +4,24 @@ kind: Ingress
 metadata:
   name: bloodconnect-ingress
   namespace: bloodconnect
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
 
 spec:
   ingressClassName: nginx
 
+  tls:
+  - hosts:
+      - hospital-34-9-138-80.nip.io
+      - donor-34-9-138-80.nip.io
+    secretName: bloodconnect-tls
+
   rules:
 
     # HOSPITAL
-    - host: hospital.bloodconnect.local
+    - host: hospital-34-9-138-80.nip.io
 
       http:
         paths:
@@ -25,7 +35,7 @@ spec:
                   number: 8000
 
     # DONOR
-    - host: donor.bloodconnect.local
+    - host: donor-34-9-138-80.nip.io
 
       http:
         paths:
