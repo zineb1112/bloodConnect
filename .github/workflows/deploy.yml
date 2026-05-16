@@ -127,10 +127,12 @@ jobs:
       # =========================
       # CONFIGURE KUBECONFIG
       # =========================
-      - name: Setup kubeconfig
-        run: |
-          mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBECONFIG }}" | base64 -d > $HOME/.kube/config
+      - name: Authenticate to GKE
+        uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: bloodconnect-cluster
+          location: us-central1-a
+          project_id: bloodconnect-496511
 
       # =========================
       # VERIFY CLUSTER
