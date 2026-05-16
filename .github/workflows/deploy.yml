@@ -83,9 +83,9 @@ jobs:
       - name: Install Trivy
         run: |
           sudo apt-get update
-          sudo apt-get install -y wget
-          wget https://github.com/aquasecurity/trivy/releases/latest/download/trivy_0.48.0_Linux-64bit.deb
-          sudo dpkg -i trivy_0.48.0_Linux-64bit.deb
+          sudo apt-get install -y wget curl
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -
+          sudo mv ./bin/trivy /usr/local/bin/trivy
 
       - name: Scan Hospital image
         run: trivy image --severity HIGH,CRITICAL --exit-code 0 ${{ secrets.DOCKER_USERNAME }}/hospital-backend:v3
