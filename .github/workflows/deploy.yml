@@ -5,6 +5,7 @@ on:
     branches:
       - main
 
+
 jobs:
 
 # =========================
@@ -42,7 +43,7 @@ jobs:
 # BUILD + SCAN + PUSH
 # =========================
   build-and-scan:
-    name: Build & Docker Security Scan
+    name: Build, Scan & Push Docker Images
     runs-on: ubuntu-latest
     needs: security-scan
 
@@ -56,30 +57,24 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build Hospital image
-        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/hospital-backend:v3 ./hospital_backend
-
-      - name: Build Donor image
-        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/donor-backend:v3 ./donor_backend
-
-      - name: Build AI image
-        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/ai-service:v3 ./ai_service
+      - name: Build images
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/hospital-backend:v3 ./hospital_backend
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/donor-backend:v3 ./donor_backend
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/ai-service:v3 ./ai_service
 
       - name: Install Trivy
         run: |
           sudo apt-get update
-          sudo apt-get install -y wget curl
+          sudo apt-get install -y curl wget
           curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -
           sudo mv ./bin/trivy /usr/local/bin/trivy
 
-      - name: Scan Hospital image
-        run: trivy image --severity HIGH,CRITICAL --exit-code 0 ${{ secrets.DOCKER_USERNAME }}/hospital-backend:v3
-
-      - name: Scan Donor image
-        run: trivy image --severity HIGH,CRITICAL --exit-code 0 ${{ secrets.DOCKER_USERNAME }}/donor-backend:v3
-
-      - name: Scan AI image
-        run: trivy image --severity HIGH,CRITICAL --exit-code 0 ${{ secrets.DOCKER_USERNAME }}/ai-service:v3
+      - name: Scan images
+        run: |
+          trivy image --severity HIGH,CRITICAL --exit-code 0 ${{ secrets.DOCKER_USERNAME }}/hospital-backend:v3
+          trivy image --severity HIGH,CRITICAL --exit-code 0 ${{ secrets.DOCKER_USERNAME }}/donor-backend:v3
+          trivy image --severity HIGH,CRITICAL --exit-code 0 ${{ secrets.DOCKER_USERNAME }}/ai-service:v3
 
       - name: Push images
         run: |
@@ -89,10 +84,10 @@ jobs:
 
 
 # =========================
-# DEPLOY TO KUBERNETES (GKE)
+# DEPLOY TO GKE (WIF)
 # =========================
   deploy:
-    name: Deploy to Kubernetes
+    name: Deploy to Kubernetes (GKE)
     runs-on: ubuntu-latest
     needs: build-and-scan
 
@@ -100,44 +95,42 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # AUTH GCP
-      - name: Authenticate to Google Cloud
+      # =========================
+      # AUTH GCP (WIF - NO KEY)
+      # =========================
+      - name: Authenticate to Google Cloud (WIF)
         uses: google-github-actions/auth@v2
         with:
-          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account_email: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
-      # INSTALL GCloud SDK
+      # Setup gcloud
       - name: Setup Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
 
-      # INSTALL GKE AUTH PLUGIN
-      - name: Install GKE auth plugin
-        run: |
-          gcloud components install gke-gcloud-auth-plugin
+      # Configure Docker auth (important for GCR/GAR)
+      - name: Configure Docker for GCP
+        run: gcloud auth configure-docker --quiet
 
-      # SETUP KUBECTL
-      - name: Setup kubectl
-        uses: azure/setup-kubectl@v4
-
-      # GET CLUSTER CREDENTIALS
-      - name: Authenticate to GKE
+      # Get GKE credentials
+      - name: Get GKE credentials
         uses: google-github-actions/get-gke-credentials@v2
         with:
           cluster_name: bloodconnect-cluster
           location: us-central1-a
           project_id: bloodconnect-496511
 
-      # VERIFY CLUSTER
+      # Verify cluster
       - name: Check cluster
         run: kubectl get nodes
 
-      # DEPLOY
-      - name: Apply Kubernetes manifests
+      # Deploy
+      - name: Deploy to Kubernetes
         run: kubectl apply -f k8s/
 
-      # VERIFY ROLLOUT
+      # Verify rollout
       - name: Verify rollout
         run: |
-          kubectl rollout status deployment hospital-deployment -n bloodconnect
-          kubectl rollout status deployment donor-deployment -n bloodconnect
-          kubectl rollout status deployment ai-deployment -n bloodconnect
+          kubectl rollout status deployment/hospital-deployment -n bloodconnect
+          kubectl rollout status deployment/donor-deployment -n bloodconnect
+          kubectl rollout status deployment/ai-deployment -n bloodconnect
