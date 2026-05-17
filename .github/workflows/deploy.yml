@@ -18,16 +18,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # =========================
-      #  GITLEAKS (NON BLOQUANT)
-      # =========================
       - name: Gitleaks Secret Scan
         uses: gitleaks/gitleaks-action@v2
         continue-on-error: true
 
-      # =========================
-      # PYTHON SECURITY
-      # =========================
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -45,7 +39,7 @@ jobs:
 
 
 # =========================
-#  BUILD + SCAN + PUSH
+# BUILD + SCAN + PUSH
 # =========================
   build-and-scan:
     name: Build & Docker Security Scan
@@ -56,18 +50,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # =========================
-      # DOCKER LOGIN
-      # =========================
       - name: Login Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # =========================
-      # BUILD IMAGES
-      # =========================
       - name: Build Hospital image
         run: docker build -t ${{ secrets.DOCKER_USERNAME }}/hospital-backend:v3 ./hospital_backend
 
@@ -77,9 +65,6 @@ jobs:
       - name: Build AI image
         run: docker build -t ${{ secrets.DOCKER_USERNAME }}/ai-service:v3 ./ai_service
 
-      # =========================
-      # TRIVY SCAN (NON BLOQUANT)
-      # =========================
       - name: Install Trivy
         run: |
           sudo apt-get update
@@ -96,9 +81,6 @@ jobs:
       - name: Scan AI image
         run: trivy image --severity HIGH,CRITICAL --exit-code 0 ${{ secrets.DOCKER_USERNAME }}/ai-service:v3
 
-      # =========================
-      # PUSH IMAGES
-      # =========================
       - name: Push images
         run: |
           docker push ${{ secrets.DOCKER_USERNAME }}/hospital-backend:v3
@@ -107,66 +89,55 @@ jobs:
 
 
 # =========================
-# DEPLOY TO KUBERNETES
+# DEPLOY TO KUBERNETES (GKE)
 # =========================
-deploy:
-  name: Deploy to Kubernetes
-  runs-on: ubuntu-latest
-  needs: build-and-scan
+  deploy:
+    name: Deploy to Kubernetes
+    runs-on: ubuntu-latest
+    needs: build-and-scan
 
-  steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    # =========================
-    # AUTH GOOGLE CLOUD
-    # =========================
-    - name: Authenticate to Google Cloud
-      uses: google-github-actions/auth@v2
-      with:
-        credentials_json: '${{ secrets.GCP_SA_KEY }}'
+      # AUTH GCP
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.GCP_SA_KEY }}'
 
-    # =========================
-    # INSTALL GKE AUTH PLUGIN
-    # =========================
-    - name: Install GKE auth plugin
-      run: |
-        gcloud components install gke-gcloud-auth-plugin
+      # INSTALL GCloud SDK
+      - name: Setup Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
 
-    # =========================
-    # INSTALL KUBECTL
-    # =========================
-    - name: Setup kubectl
-      uses: azure/setup-kubectl@v4
+      # INSTALL GKE AUTH PLUGIN
+      - name: Install GKE auth plugin
+        run: |
+          gcloud components install gke-gcloud-auth-plugin
 
-    # =========================
-    # GET GKE CREDENTIALS
-    # =========================
-    - name: Authenticate to GKE
-      uses: google-github-actions/get-gke-credentials@v2
-      with:
-        cluster_name: bloodconnect-cluster
-        location: us-central1-a
-        project_id: bloodconnect-496511
+      # SETUP KUBECTL
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v4
 
-    # =========================
-    # VERIFY CLUSTER
-    # =========================
-    - name: Check cluster
-      run: kubectl get nodes
+      # GET CLUSTER CREDENTIALS
+      - name: Authenticate to GKE
+        uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: bloodconnect-cluster
+          location: us-central1-a
+          project_id: bloodconnect-496511
 
-    # =========================
-    # DEPLOY
-    # =========================
-    - name: Apply Kubernetes manifests
-      run: kubectl apply -f k8s/
+      # VERIFY CLUSTER
+      - name: Check cluster
+        run: kubectl get nodes
 
-    # =========================
-    # VERIFY ROLLOUT
-    # =========================
-    - name: Verify rollout
-      run: |
-        kubectl rollout status deployment hospital-deployment -n bloodconnect
-        kubectl rollout status deployment donor-deployment -n bloodconnect
-        kubectl rollout status deployment ai-deployment -n bloodconnect
+      # DEPLOY
+      - name: Apply Kubernetes manifests
+        run: kubectl apply -f k8s/
 
+      # VERIFY ROLLOUT
+      - name: Verify rollout
+        run: |
+          kubectl rollout status deployment hospital-deployment -n bloodconnect
+          kubectl rollout status deployment donor-deployment -n bloodconnect
+          kubectl rollout status deployment ai-deployment -n bloodconnect
